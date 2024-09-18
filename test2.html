@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    div {
+      margin: 30px;
+      border: 2px solid #1a1b1a;
+    }
+
+    table {
+      text-align: center;
+      margin-left: 0.5%;
+      margin-right: 0.5%;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular',
+                   'Lucida Grande', 'Lucida Sans Unicode',
+                   Geneva, Verdana, sans-serif;
+      font-size: small;
+    }
+
+    input, button {
+      text-align: center;
+      padding: 12px 20px;
+      margin: 2px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 24px;
+      box-sizing: border-box;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular',
+                   'Lucida Grande', 'Lucida Sans Unicode',
+                   Geneva, Verdana, sans-serif;
+      font-size: small;
+      align: center;
+    }
+
+    .error {
+      border-color: red;
+    }
+
+    .success {
+      border-color: white;
+    }
+
+    .error-message {
+      color: red;
+      font-size: small;
+    }
+
+    .summary {
+      margin-top: 20px;
+      padding: 10px;
+      border: 2px solid #1a1b1a;
+      background-color: #f0f0f0;
+      display: none;
+    }
+  </style>
+</head>
+<body style="background-color:rgb(254, 254, 188);">
+
+  <h1 style="text-align:center; background-color:rgba(255, 99, 71, 0.4);">WELCOME TO THE RESTAURANT</h1>
+
+  <div style="text-align:center;">
+    <h1>Booking your place for your dinner!</h1>
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" size="22" onblur="validateName()">
+    <p id="nameError" class="error-message"></p><br>
+
+    <label for="phone">Phone Number:</label>
+    <input type="text" id="phone" size="22" onblur="validatePhone()">
+    <p id="phoneError" class="error-message"></p><br>
+
+    <h2>Select a time</h2>
+    <input type="radio" id="first" name="seating" value="5" checked>
+    <label for="first">5:00</label><br>
+    <input type="radio" id="second" name="seating" value="6">
+    <label for="second">6:00</label><br>
+    <input type="radio" id="third" name="seating" value="7">
+    <label for="third">7:00</label><br>
+    <input type="radio" id="fourth" name="seating" value="8">
+    <label for="fourth">8:00</label><br>
+
+    <h2>What would you like to have with us?</h2>
+    <input type="checkbox" id="starters" name="starters" value="starters">
+    <label for="starters">Starters</label><br>
+    <input type="checkbox" id="Main" name="Main" value="main">
+    <label for="Main">Main Course</label><br>
+    <input type="checkbox" id="dessert" name="dessert" value="dessert">
+    <label for="dessert">Dessert</label><br>
+    <input type="checkbox" id="drinks" name="drinks" value="drinks">
+    <label for="drinks">Drinks</label><br>
+
+    <button onclick="submitForm()" id="submit">Submit</button>
+  </div>
+  <div id="summary" class="summary">
+    <h2>Summary of Your Booking:</h2>
+    <p id="summaryName"></p>
+    <p id="summaryPhone"></p>
+    <p id="summaryTime"></p>
+    <p id="summaryMenu"></p>
+  </div>
+
+  <script>
+    function validateName() {
+      const nameField = document.getElementById("name");
+      const nameError = document.getElementById("nameError");
+      const nameValue = nameField.value.trim();
+
+      if (!nameValue) {
+        nameError.textContent = "Error: Name is empty.";
+        nameField.classList.add("error");
+        nameField.classList.remove("success");
+      } else if (!nameValue.includes(" ") || nameValue.split(" ").length < 2) {
+        nameError.textContent = "Error: First and last names are required.";
+        nameField.classList.add("error");
+        nameField.classList.remove("success");
+      } else {
+        nameError.textContent = "";
+        nameField.classList.remove("error");
+        nameField.classList.add("success");
+      }
+    }
+
+    function validatePhone() {
+      const phoneField = document.getElementById("phone");
+      const phoneError = document.getElementById("phoneError");
+      const phoneValue = phoneField.value.trim();
+
+      const phonePattern = /^[0-9][a-zA-Z0-9]{5}$/;
+
+      if (!phoneValue) {
+        phoneError.textContent = "Error: Phone number is empty.";
+        phoneField.classList.add("error");
+        phoneField.classList.remove("success");
+      } else if (phoneValue.length !== 6) {
+        phoneError.textContent = "Error: Phone numbers must have exactly 6 characters.";
+        phoneField.classList.add("error");
+        phoneField.classList.remove("success");
+      } else if (!phonePattern.test(phoneValue)) {
+        phoneError.textContent = "Error: Phone number must start with a number.";
+        phoneField.classList.add("error");
+        phoneField.classList.remove("success");
+      } else {
+        phoneError.textContent = "";
+        phoneField.classList.remove("error");
+        phoneField.classList.add("success");
+      }
+    }
+
+    function submitForm() {
+      validateName();
+      validatePhone();
+
+      const nameError = document.getElementById("nameError").textContent;
+      const phoneError = document.getElementById("phoneError").textContent;
+      if (nameError || phoneError) {
+        return;
+      }
+
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+
+      const timeInputs = document.getElementsByName("seating");
+      let selectedTime;
+      for (const input of timeInputs) {
+        if (input.checked) {
+          selectedTime = input.value;
+          break;
+        }
+      }
+
+      const menuOptions = [];
+      const menuInputs = document.getElementsByName("starters");
+      if (document.getElementById("starters").checked) menuOptions.push("Starters");
+      if (document.getElementById("Main").checked) menuOptions.push("Main Course");
+      if (document.getElementById("dessert").checked) menuOptions.push("Dessert");
+      if (document.getElementById("drinks").checked) menuOptions.push("Drinks");
+
+      
+      document.getElementById("summaryName").textContent = "Name: " + name;
+      document.getElementById("summaryPhone").textContent = "Phone Number: " + phone;
+      document.getElementById("summaryTime").textContent = "Selected Time: " + selectedTime;
+      document.getElementById("summaryMenu").textContent = "Menu Options: " + menuOptions.join(", ");
+      
+      document.getElementById("summary").style.display = "block";
+    }
+  </script>
+</body>
+</html>
